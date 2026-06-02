@@ -33,9 +33,17 @@ yarn-error.*
 # local env files
 .env*.local
 
+# EAS / Play Store secrets
+google-service-account.json
+*-service-account.json
+play-store-credentials.json
+
 # typescript
 *.tsbuildinfo
 
 # generated native folders
 /ios
 /android
+
+# Upload cert PEM (public, but no need to commit)
+upload_cert.pem

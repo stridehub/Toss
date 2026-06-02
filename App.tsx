@@ -1,20 +1,98 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+import { SettingsProvider } from './src/store/SettingsStore';
+import DrawerContent from './src/navigation/DrawerContent';
+import HomeScreen from './src/screens/HomeScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import TermsScreen from './src/screens/TermsScreen';
+import PrivacyScreen from './src/screens/PrivacyScreen';
+import SplashOverlay from './src/components/SplashOverlay';
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
+const Drawer = createDrawerNavigator();
+
+const Navigation: React.FC = () => {
+  const { isDark, colors } = useTheme();
+  const navTheme = {
+    ...(isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDark ? DarkTheme : DefaultTheme).colors,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.text,
+      border: colors.border,
+      primary: colors.primary,
+    },
+  };
+
+  return (
+    <NavigationContainer theme={navTheme}>
+      <Drawer.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+          drawerType: 'front',
+          drawerStyle: { width: 300 },
+        }}
+        drawerContent={DrawerContent}
+      >
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Settings" component={SettingsScreen} />
+        <Drawer.Screen name="Terms" component={TermsScreen} />
+        <Drawer.Screen name="Privacy" component={PrivacyScreen} />
+      </Drawer.Navigator>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+    </NavigationContainer>
+  );
+};
 
 export default function App() {
+  const [fontsLoaded, fontsError] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+  const [splashDone, setSplashDone] = useState(false);
+
+  const onLayoutRoot = useCallback(() => {
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontsError]);
+
+  useEffect(() => {
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded, fontsError]);
+
+  if (!fontsLoaded && !fontsError) return null;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRoot}>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <Navigation />
+          </SettingsProvider>
+        </ThemeProvider>
+        {!splashDone && <SplashOverlay onDone={() => setSplashDone(true)} />}
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
