@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import {
@@ -27,6 +28,8 @@ const Drawer = createDrawerNavigator();
 
 const Navigation: React.FC = () => {
   const { isDark, colors } = useTheme();
+  const { width: winWidth } = useWindowDimensions();
+  const drawerWidth = Math.min(Math.max(winWidth * 0.78, 280), 360);
   const navTheme = {
     ...(isDark ? DarkTheme : DefaultTheme),
     colors: {
@@ -46,7 +49,7 @@ const Navigation: React.FC = () => {
         screenOptions={{
           headerShown: false,
           drawerType: 'front',
-          drawerStyle: { width: 300 },
+          drawerStyle: { width: drawerWidth },
         }}
         drawerContent={DrawerContent}
       >
