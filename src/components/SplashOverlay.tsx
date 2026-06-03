@@ -33,7 +33,7 @@ const SplashOverlay: React.FC<Props> = ({ onDone, durationMs = 1500 }) => {
     <Animated.View style={[styles.root, { opacity }]} pointerEvents="none">
       <View style={styles.center}>
         <Image
-          source={require('../../assets/Heads.png')}
+          source={require('../../assets/splash-image.png')}
           style={styles.logo}
           resizeMode="contain"
         />
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  logo: { width: 240, height: 240 },
+  logo: { width: 320, height: 320 },
   bottom: { paddingBottom: 48, paddingHorizontal: 24, alignItems: 'center' },
   brand: {
     color: '#FFFFFF',
