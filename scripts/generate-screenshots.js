@@ -70,15 +70,30 @@ const ICON = {
     `<svg viewBox="0 0 512 512" width="100%" height="100%" fill="none" stroke="${c}" stroke-width="28" stroke-linejoin="round"><path d="M416 221v245a14 14 0 0 1-14 14H110a14 14 0 0 1-14-14V46a14 14 0 0 1 14-14h171Z"/><path d="M256 56v124a32 32 0 0 0 32 32h120M176 288h160M176 368h160"/></svg>`,
   shield: (c) =>
     `<svg viewBox="0 0 512 512" width="100%" height="100%" fill="none" stroke="${c}" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"><path d="M336 176 225 304l-49-48"/><path d="M463 96 256 32 49 96v160c0 80 67 159 207 224 140-65 207-144 207-224Z"/></svg>`,
+  swapH: (c) =>
+    `<svg viewBox="0 0 512 512" width="100%" height="100%" fill="none" stroke="${c}" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M304 48 416 160 304 272M112 240 80 240M416 160 80 160M208 464 96 352 208 240M96 352 432 352"/></svg>`,
+  swapV: (c) =>
+    `<svg viewBox="0 0 512 512" width="100%" height="100%" fill="none" stroke="${c}" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M464 208 352 96 240 208M352 416 352 96M48 304 160 416 272 304M160 96 160 416"/></svg>`,
 };
 
 // --- Scene templates -----------------------------------------------------
 //
 // Each returns { html, label } that renders one app screen at viewport
 // width/height. CSS uses percentages of vh to scale across devices.
-function home({ theme, face, hint }) {
+function home({ theme, face, hint, axis = 'horizontal' }) {
   const c = COLORS[theme];
   const isDark = theme === 'dark';
+  const axisChip = (val, iconKey, label) => {
+    const active = axis === val;
+    const bg = active ? c.primarySoft : c.surfaceAlt;
+    const border = active ? c.primary : c.border;
+    const tint = active ? c.primary : c.textMuted;
+    return `
+      <div class="axis-chip" style="background:${bg};border-color:${border};color:${tint}">
+        <span class="axis-icon">${ICON[iconKey](tint)}</span>
+        <span>${label}</span>
+      </div>`;
+  };
   return `
     <div class="screen" style="background:${c.background};color:${c.text}">
       <div class="header" style="border-bottom-color:${c.border}">
@@ -93,6 +108,10 @@ function home({ theme, face, hint }) {
           <span style="color:${c.accent}">${face}</span>
         </div>
         <div class="hint" style="color:${c.textMuted}">${hint}</div>
+        <div class="axis-row">
+          ${axisChip('horizontal', 'swapH', 'Horizontal')}
+          ${axisChip('vertical', 'swapV', 'Vertical')}
+        </div>
       </div>
     </div>
   `;
@@ -238,13 +257,14 @@ const PRIVACY = {
 };
 
 const SCENES = [
-  { name: '01-home-tap-dark', render: () => home({ theme: 'dark', face: 'TAP', hint: 'Tap to flip' }) },
-  { name: '02-home-heads-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip' }) },
-  { name: '03-home-tails-light', render: () => home({ theme: 'light', face: 'TAILS', hint: 'Tap to flip' }) },
-  { name: '04-drawer-dark', render: () => drawer({ theme: 'dark' }) },
-  { name: '05-settings-dark', render: () => settings({ theme: 'dark' }) },
-  { name: '06-terms-dark', render: () => doc({ theme: 'dark', ...TERMS }) },
-  { name: '07-privacy-light', render: () => doc({ theme: 'light', ...PRIVACY }) },
+  { name: '01-home-tap-dark', render: () => home({ theme: 'dark', face: 'TAP', hint: 'Tap to flip', axis: 'horizontal' }) },
+  { name: '02-home-heads-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip', axis: 'horizontal' }) },
+  { name: '03-home-tails-light', render: () => home({ theme: 'light', face: 'TAILS', hint: 'Tap to flip', axis: 'horizontal' }) },
+  { name: '04-home-vertical-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip', axis: 'vertical' }) },
+  { name: '05-drawer-dark', render: () => drawer({ theme: 'dark' }) },
+  { name: '06-settings-dark', render: () => settings({ theme: 'dark' }) },
+  { name: '07-terms-dark', render: () => doc({ theme: 'dark', ...TERMS }) },
+  { name: '08-privacy-light', render: () => doc({ theme: 'light', ...PRIVACY }) },
 ];
 
 // CSS that ties absolute vh-based sizes to the viewport (works at any device size)
@@ -271,6 +291,13 @@ const CSS = `
   }
   .coin span { font-size: 6.4vh; letter-spacing: 0.5vh; font-weight: 400; }
   .hint { margin-top: 4vh; font-size: 1.9vh; }
+  .axis-row { display: flex; gap: 1.2vh; margin-top: 2.6vh; }
+  .axis-chip {
+    display: flex; align-items: center; gap: 0.8vh;
+    padding: 1vh 1.8vh; border-radius: 999px; border: 1px solid;
+    font-size: 1.6vh; font-weight: 600;
+  }
+  .axis-icon { width: 2vh; height: 2vh; display: inline-flex; align-items: center; justify-content: center; }
 
   /* Drawer scene */
   .drawer-overlay {
