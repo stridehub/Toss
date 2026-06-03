@@ -4,35 +4,45 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme, ThemeMode } from '../theme/ThemeContext';
-import { useSettings } from '../store/SettingsStore';
+import { useSettings, FlipAxis } from '../store/SettingsStore';
 
-const ModeOption: React.FC<{ value: ThemeMode; label: string; current: ThemeMode; onPick: (m: ThemeMode) => void }> = ({
-  value,
-  label,
-  current,
-  onPick,
-}) => {
+interface PillProps<V extends string> {
+  value: V;
+  label: string;
+  active: boolean;
+  iconName?: keyof typeof Ionicons.glyphMap;
+  onPick: (v: V) => void;
+}
+
+function Pill<V extends string>({ value, label, active, iconName, onPick }: Readonly<PillProps<V>>): React.ReactElement {
   const { colors } = useTheme();
-  const active = current === value;
   return (
     <Pressable
       onPress={() => onPick(value)}
       style={[
-        styles.modeChip,
+        styles.pill,
         {
           backgroundColor: active ? colors.primarySoft : colors.surfaceAlt,
           borderColor: active ? colors.primary : colors.border,
         },
       ]}
     >
-      <Text style={[styles.modeText, { color: active ? colors.primary : colors.text }]}>{label}</Text>
+      {iconName ? (
+        <Ionicons
+          name={iconName}
+          size={16}
+          color={active ? colors.primary : colors.textMuted}
+          style={{ marginRight: 6 }}
+        />
+      ) : null}
+      <Text style={[styles.pillText, { color: active ? colors.primary : colors.text }]}>{label}</Text>
     </Pressable>
   );
-};
+}
 
 const SettingsScreen: React.FC = () => {
   const { colors, mode, setMode } = useTheme();
-  const { voiceAssist, setVoiceAssist } = useSettings();
+  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis } = useSettings();
   const navigation = useNavigation();
 
   return (
@@ -49,10 +59,34 @@ const SettingsScreen: React.FC = () => {
         <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Appearance</Text>
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.cardLabel, { color: colors.text }]}>Theme</Text>
-          <View style={styles.modeRow}>
-            <ModeOption value="light" label="Light" current={mode} onPick={setMode} />
-            <ModeOption value="dark" label="Dark" current={mode} onPick={setMode} />
-            <ModeOption value="system" label="System" current={mode} onPick={setMode} />
+          <View style={styles.pillRow}>
+            <Pill<ThemeMode> value="light" label="Light" active={mode === 'light'} onPick={setMode} />
+            <Pill<ThemeMode> value="dark" label="Dark" active={mode === 'dark'} onPick={setMode} />
+            <Pill<ThemeMode> value="system" label="System" active={mode === 'system'} onPick={setMode} />
+          </View>
+        </View>
+
+        <Text style={[styles.sectionTitle, { color: colors.textMuted }]}>Flip</Text>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.cardLabel, { color: colors.text }]}>Flip direction</Text>
+          <Text style={[styles.cardSub, { color: colors.textMuted }]}>
+            How the coin spins when you tap it.
+          </Text>
+          <View style={styles.pillRow}>
+            <Pill<FlipAxis>
+              value="vertical"
+              label="Vertical"
+              iconName="swap-vertical"
+              active={flipAxis === 'vertical'}
+              onPick={setFlipAxis}
+            />
+            <Pill<FlipAxis>
+              value="horizontal"
+              label="Horizontal"
+              iconName="swap-horizontal"
+              active={flipAxis === 'horizontal'}
+              onPick={setFlipAxis}
+            />
           </View>
         </View>
 
@@ -100,15 +134,16 @@ const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', alignItems: 'center' },
   cardLabel: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
   cardSub: { fontSize: 13, marginTop: 2, fontFamily: 'Inter_400Regular' },
-  modeRow: { flexDirection: 'row', marginTop: 12 },
-  modeChip: {
+  pillRow: { flexDirection: 'row', marginTop: 12, flexWrap: 'wrap', gap: 8 },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
-    marginRight: 8,
   },
-  modeText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+  pillText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
 });
 
 export default SettingsScreen;

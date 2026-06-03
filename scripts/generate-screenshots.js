@@ -80,20 +80,9 @@ const ICON = {
 //
 // Each returns { html, label } that renders one app screen at viewport
 // width/height. CSS uses percentages of vh to scale across devices.
-function home({ theme, face, hint, axis = 'horizontal' }) {
+function home({ theme, face, hint }) {
   const c = COLORS[theme];
   const isDark = theme === 'dark';
-  const axisChip = (val, iconKey, label) => {
-    const active = axis === val;
-    const bg = active ? c.primarySoft : c.surfaceAlt;
-    const border = active ? c.primary : c.border;
-    const tint = active ? c.primary : c.textMuted;
-    return `
-      <div class="axis-chip" style="background:${bg};border-color:${border};color:${tint}">
-        <span class="axis-icon">${ICON[iconKey](tint)}</span>
-        <span>${label}</span>
-      </div>`;
-  };
   return `
     <div class="screen" style="background:${c.background};color:${c.text}">
       <div class="header" style="border-bottom-color:${c.border}">
@@ -108,10 +97,6 @@ function home({ theme, face, hint, axis = 'horizontal' }) {
           <span style="color:${c.accent}">${face}</span>
         </div>
         <div class="hint" style="color:${c.textMuted}">${hint}</div>
-        <div class="axis-row">
-          ${axisChip('horizontal', 'swapH', 'Horizontal')}
-          ${axisChip('vertical', 'swapV', 'Vertical')}
-        </div>
       </div>
     </div>
   `;
@@ -165,6 +150,20 @@ function settings({ theme }) {
           </div>
         </div>
 
+        <div class="section-label" style="color:${c.textMuted}">FLIP</div>
+        <div class="card" style="background:${c.surface};border-color:${c.border}">
+          <div class="card-label" style="color:${c.text}">Flip direction</div>
+          <div class="card-sub" style="color:${c.textMuted}">How the coin spins when you tap it.</div>
+          <div class="mode-row">
+            <div class="chip active" style="background:${c.primarySoft};border-color:${c.primary};color:${c.primary}">
+              <span class="chip-icon">${ICON.swapV(c.primary)}</span>Vertical
+            </div>
+            <div class="chip" style="background:${c.surfaceAlt};border-color:${c.border};color:${c.text}">
+              <span class="chip-icon">${ICON.swapH(c.textMuted)}</span>Horizontal
+            </div>
+          </div>
+        </div>
+
         <div class="section-label" style="color:${c.textMuted}">ASSISTANCE</div>
         <div class="card" style="background:${c.surface};border-color:${c.border}">
           <div class="card-row">
@@ -172,8 +171,8 @@ function settings({ theme }) {
               <div class="card-label" style="color:${c.text}">Voice assist</div>
               <div class="card-sub" style="color:${c.textMuted}">Announce toss results out loud.</div>
             </div>
-            <div class="switch off" style="background:${c.border}">
-              <div class="switch-knob"></div>
+            <div class="switch on" style="background:${c.primarySoft}">
+              <div class="switch-knob" style="margin-left:auto;background:${c.primary}"></div>
             </div>
           </div>
         </div>
@@ -257,14 +256,13 @@ const PRIVACY = {
 };
 
 const SCENES = [
-  { name: '01-home-tap-dark', render: () => home({ theme: 'dark', face: 'TAP', hint: 'Tap to flip', axis: 'horizontal' }) },
-  { name: '02-home-heads-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip', axis: 'horizontal' }) },
-  { name: '03-home-tails-light', render: () => home({ theme: 'light', face: 'TAILS', hint: 'Tap to flip', axis: 'horizontal' }) },
-  { name: '04-home-vertical-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip', axis: 'vertical' }) },
-  { name: '05-drawer-dark', render: () => drawer({ theme: 'dark' }) },
-  { name: '06-settings-dark', render: () => settings({ theme: 'dark' }) },
-  { name: '07-terms-dark', render: () => doc({ theme: 'dark', ...TERMS }) },
-  { name: '08-privacy-light', render: () => doc({ theme: 'light', ...PRIVACY }) },
+  { name: '01-home-tap-dark', render: () => home({ theme: 'dark', face: 'TAP', hint: 'Tap to flip' }) },
+  { name: '02-home-heads-dark', render: () => home({ theme: 'dark', face: 'HEADS', hint: 'Tap to flip' }) },
+  { name: '03-home-tails-light', render: () => home({ theme: 'light', face: 'TAILS', hint: 'Tap to flip' }) },
+  { name: '04-drawer-dark', render: () => drawer({ theme: 'dark' }) },
+  { name: '05-settings-dark', render: () => settings({ theme: 'dark' }) },
+  { name: '06-terms-dark', render: () => doc({ theme: 'dark', ...TERMS }) },
+  { name: '07-privacy-light', render: () => doc({ theme: 'light', ...PRIVACY }) },
 ];
 
 // CSS that ties absolute vh-based sizes to the viewport (works at any device size)
@@ -338,8 +336,12 @@ const CSS = `
   .card-row > div:first-child { flex: 1; }
   .mode-row { display: flex; gap: 1vh; margin-top: 1.5vh; }
   .chip {
+    display: inline-flex; align-items: center;
     padding: 1vh 1.8vh; border-radius: 999px; border: 1px solid;
     font-size: 1.7vh; font-weight: 600;
+  }
+  .chip-icon {
+    display: inline-flex; width: 1.8vh; height: 1.8vh; margin-right: 0.7vh;
   }
   .switch {
     width: 5.2vh; height: 3.2vh; border-radius: 999px; position: relative;

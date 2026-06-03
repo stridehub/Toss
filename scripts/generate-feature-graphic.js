@@ -28,9 +28,9 @@ const PHONE_GAP = 56;
 
 // Three screens for the hero: drawer / heads / settings
 const SHOTS = [
-  '05-drawer-dark.png',
+  '04-drawer-dark.png',
   '02-home-heads-dark.png',
-  '06-settings-dark.png',
+  '05-settings-dark.png',
 ];
 
 async function buildPhoneTile(file) {

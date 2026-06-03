@@ -1,19 +1,23 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export type FlipAxis = 'horizontal' | 'vertical';
+
 interface SettingsState {
   voiceAssist: boolean;
+  flipAxis: FlipAxis;
 }
 
 interface SettingsValue extends SettingsState {
   setVoiceAssist: (on: boolean) => void;
+  setFlipAxis: (axis: FlipAxis) => void;
 }
 
 const SettingsContext = createContext<SettingsValue | undefined>(undefined);
 
 const STORAGE_KEY = '@toss/settings';
 
-const defaultState: SettingsState = { voiceAssist: false };
+const defaultState: SettingsState = { voiceAssist: false, flipAxis: 'vertical' };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<SettingsState>(defaultState);
@@ -43,7 +47,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((s) => ({ ...s, voiceAssist: on }));
   }, []);
 
-  const value = useMemo(() => ({ ...state, setVoiceAssist }), [state, setVoiceAssist]);
+  const setFlipAxis = useCallback((axis: FlipAxis) => {
+    setState((s) => ({ ...s, flipAxis: axis }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ ...state, setVoiceAssist, setFlipAxis }),
+    [state, setVoiceAssist, setFlipAxis],
+  );
 
   if (!hydrated) return null;
 
