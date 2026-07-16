@@ -1,0 +1,12 @@
+A huge thank-you to all our early testers — this build is for you! 🙏
+
+NEW
+• Flip stats under the coin: heads/tails counts, streaks, and your last 10 results (saved across restarts)
+• One-tap stats reset with confirmation
+
+FIXED
+• Voice assist now speaks exactly when the coin lands
+• Results are announced with TalkBack for accessibility
+• Minor stability fixes
+
+A fresh build lands every day during testing — keep flipping and share feedback in the tester group!

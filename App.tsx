@@ -15,6 +15,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import { SettingsProvider } from './src/store/SettingsStore';
+import { StatsProvider } from './src/store/StatsStore';
 import DrawerContent from './src/navigation/DrawerContent';
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -97,7 +98,9 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider>
           <SettingsProvider>
-            <Navigation />
+            <StatsProvider>
+              <Navigation />
+            </StatsProvider>
           </SettingsProvider>
         </ThemeProvider>
         {!splashDone && <SplashOverlay onDone={() => setSplashDone(true)} />}

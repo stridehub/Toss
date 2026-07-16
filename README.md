@@ -5,12 +5,13 @@ A minimal, single-tap coin-flip Android app. Tap the coin, get HEADS or TAILS. T
 Built with Expo + React Native, published to Google Play via EAS.
 
 - **Package**: `app.stridehub.toss`
-- **Latest release**: [v1.0.0](https://github.com/dapphari007/Toss/releases/tag/v1.0.0)
+- **Latest release**: v1.1.0 (see [CHANGELOG.md](CHANGELOG.md) — one build per day during closed testing, plan in [ROADMAP.md](ROADMAP.md))
 - **By**: STRIDEHUB
 
 ## Features
 
 - Single animated coin on the home screen — tap to flip (HEADS / TAILS)
+- Flip stats under the coin — heads/tails counts, current streak, last 10 results (persisted), one-tap reset
 - Light / dark theme toggle in the header, persisted with `AsyncStorage`
 - Drawer sidebar (Settings, Terms & Conditions, Privacy Policy)
 - Splash overlay with the logo + `BY STRIDEHUB`, fades into the app
@@ -50,7 +51,8 @@ Built with Expo + React Native, published to Google Play via EAS.
     │   ├── TermsScreen.tsx
     │   └── PrivacyScreen.tsx
     ├── store/
-    │   └── SettingsStore.tsx   # Voice assist toggle + persistence
+    │   ├── SettingsStore.tsx   # Voice assist + flip axis, persisted
+    │   └── StatsStore.tsx      # Flip stats (counts, streak, recent), persisted
     └── theme/
         └── ThemeContext.tsx    # Light/dark colors + persistence
 ```
@@ -86,7 +88,7 @@ Place a Google Play **service account JSON** in the project root as `google-serv
 eas submit --platform android --profile production
 ```
 
-This pushes the latest production build to the **Internal testing** track as a **draft** (see `eas.json`). Promote to production manually in [Play Console](https://play.google.com/console).
+This pushes the latest production build to the **Closed testing (alpha)** track and publishes it to testers automatically (see `eas.json`). Google requires a 14-day closed test with 12+ engaged testers before granting production access — daily builds and release notes live in [ROADMAP.md](ROADMAP.md) and [CHANGELOG.md](CHANGELOG.md). Promote to production manually in [Play Console](https://play.google.com/console) once access is granted.
 
 ## Configuration touch-points
 

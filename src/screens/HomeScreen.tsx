@@ -1,5 +1,15 @@
-import React, { useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  AccessibilityInfo,
+  Alert,
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,18 +17,21 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme, ThemeMode } from '../theme/ThemeContext';
 import { useSettings } from '../store/SettingsStore';
+import { useStats, CoinFace } from '../store/StatsStore';
 
 type Nav = DrawerNavigationProp<Record<string, object | undefined>>;
-type Face = 'heads' | 'tails' | null;
+type Face = CoinFace | null;
 
 const HomeScreen: React.FC = () => {
   const { colors, isDark, setMode } = useTheme();
   const { flipAxis, voiceAssist } = useSettings();
+  const { heads, tails, total, streak, streakFace, recent, recordFlip, resetStats } = useStats();
   const navigation = useNavigation<Nav>();
   const { width, height } = useWindowDimensions();
   const [face, setFace] = useState<Face>(null);
   const [flipping, setFlipping] = useState(false);
   const spin = useRef(new Animated.Value(0)).current;
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const minDim = Math.min(width, height);
   const coinSize = Math.min(Math.max(minDim * 0.55, 200), 420);
@@ -29,6 +42,14 @@ const HomeScreen: React.FC = () => {
   const headerIcon = width >= 600 ? 30 : 26;
   const themeIcon = width >= 600 ? 24 : 20;
 
+  useEffect(
+    () => () => {
+      if (swapTimer.current) clearTimeout(swapTimer.current);
+      Speech.stop();
+    },
+    [],
+  );
+
   const toggleTheme = () => {
     const next: ThemeMode = isDark ? 'light' : 'dark';
     setMode(next);
@@ -36,26 +57,37 @@ const HomeScreen: React.FC = () => {
 
   const flip = () => {
     if (flipping) return;
-    const next: Face = Math.random() < 0.5 ? 'heads' : 'tails';
+    const next: CoinFace = Math.random() < 0.5 ? 'heads' : 'tails';
     setFlipping(true);
     spin.setValue(0);
     // Swap the face at the spin's midpoint so it changes during an edge-on frame,
     // not as a snap right at the end.
-    setTimeout(() => {
-      setFace(next);
-      if (voiceAssist) {
-        Speech.stop();
-        Speech.speak(next === 'heads' ? 'Heads' : 'Tails', { rate: 1, pitch: 1 });
-      }
-    }, 400);
+    swapTimer.current = setTimeout(() => setFace(next), 400);
     Animated.timing(spin, {
       toValue: 1,
       duration: 800,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
-    }).start(() => {
+    }).start(({ finished }) => {
       setFlipping(false);
+      if (!finished) return;
+      recordFlip(next);
+      const spoken = next === 'heads' ? 'Heads' : 'Tails';
+      if (voiceAssist) {
+        Speech.stop();
+        Speech.speak(spoken, { rate: 1, pitch: 1 });
+      } else {
+        // Voice assist off: still surface the result to screen-reader users.
+        AccessibilityInfo.announceForAccessibility(spoken);
+      }
     });
+  };
+
+  const confirmReset = () => {
+    Alert.alert('Reset stats?', 'This clears your heads/tails counts and recent flips.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Reset', style: 'destructive', onPress: resetStats },
+    ]);
   };
 
   const rotation = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '1080deg'] });
@@ -106,7 +138,12 @@ const HomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.center}>
-        <Pressable onPress={flip} accessibilityLabel="Flip coin" disabled={flipping}>
+        <Pressable
+          onPress={flip}
+          accessibilityRole="button"
+          accessibilityLabel="Flip coin"
+          disabled={flipping}
+        >
           <Animated.View
             style={[
               styles.coin,
@@ -126,6 +163,74 @@ const HomeScreen: React.FC = () => {
           </Animated.View>
         </Pressable>
         <Text style={[styles.hint, { color: colors.textMuted, fontSize: hintSize }]}>Tap to flip</Text>
+
+        {total > 0 && (
+          <View style={styles.stats}>
+            <View style={styles.countersRow}>
+              <View
+                style={[
+                  styles.counterPill,
+                  { backgroundColor: colors.surfaceAlt, borderColor: colors.border },
+                ]}
+                accessibilityLabel={`Heads ${heads}`}
+              >
+                <Text style={[styles.counterLabel, { color: colors.textMuted }]}>HEADS</Text>
+                <Text style={[styles.counterValue, { color: colors.text }]}>{heads}</Text>
+              </View>
+              <View
+                style={[
+                  styles.counterPill,
+                  { backgroundColor: colors.surfaceAlt, borderColor: colors.border },
+                ]}
+                accessibilityLabel={`Tails ${tails}`}
+              >
+                <Text style={[styles.counterLabel, { color: colors.textMuted }]}>TAILS</Text>
+                <Text style={[styles.counterValue, { color: colors.text }]}>{tails}</Text>
+              </View>
+              <Pressable
+                onPress={confirmReset}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel="Reset stats"
+                style={[
+                  styles.resetBtn,
+                  { backgroundColor: colors.surfaceAlt, borderColor: colors.border },
+                ]}
+              >
+                <Ionicons name="refresh" size={16} color={colors.textMuted} />
+              </Pressable>
+            </View>
+
+            <View style={styles.recentRow} accessibilityLabel={`Last ${recent.length} flips`}>
+              {recent.map((f, i) => (
+                <View
+                  key={`${i}-${f}`}
+                  style={[
+                    styles.chip,
+                    f === 'heads'
+                      ? { backgroundColor: colors.primarySoft, borderColor: colors.primary }
+                      : { backgroundColor: colors.surfaceAlt, borderColor: colors.border },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.chipText,
+                      { color: f === 'heads' ? colors.primary : colors.textMuted },
+                    ]}
+                  >
+                    {f === 'heads' ? 'H' : 'T'}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {streak >= 2 && streakFace && (
+              <Text style={[styles.streak, { color: colors.textMuted }]}>
+                {streak} × {streakFace.toUpperCase()} in a row
+              </Text>
+            )}
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -155,6 +260,38 @@ const styles = StyleSheet.create({
   },
   coinLabel: { letterSpacing: 4, fontFamily: 'Inter_400Regular' },
   hint: { marginTop: 28, fontFamily: 'Inter_400Regular' },
+  stats: { marginTop: 20, alignItems: 'center', gap: 10 },
+  countersRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  counterPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  counterLabel: { fontSize: 11, letterSpacing: 1, fontFamily: 'Inter_600SemiBold' },
+  counterValue: { fontSize: 14, fontFamily: 'Inter_700Bold' },
+  resetBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  recentRow: { flexDirection: 'row', gap: 6 },
+  chip: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  chipText: { fontSize: 11, fontFamily: 'Inter_700Bold' },
+  streak: { fontSize: 13, fontFamily: 'Inter_500Medium' },
 });
 
 export default HomeScreen;
