@@ -2,7 +2,7 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
-## [1.1.0] — 2026-07-16
+## [1.1.0] — 2026-07-17
 
 ### Added
 

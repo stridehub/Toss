@@ -70,7 +70,15 @@ Scan the QR with Expo Go on your phone, or press `a` to launch Android.
 
 ## Build for production
 
-Requires `eas-cli` installed globally (`npm install -g eas-cli`) and an Expo account linked to this project.
+**Automated (default):** push a version tag and GitHub Actions does the rest — EAS builds the AAB and auto-submits it to the Play closed-testing (alpha) track:
+
+```bash
+git tag v1.2.0 && git push origin main v1.2.0
+```
+
+Requires two repo secrets (one-time setup): `EXPO_TOKEN` ([create here](https://expo.dev/settings/access-tokens)) and `GOOGLE_SERVICE_ACCOUNT_JSON` (contents of the Play service account key). See `.github/workflows/eas-release.yml`.
+
+**Manual fallback:** requires `eas-cli` installed globally (`npm install -g eas-cli`) and an Expo account linked to this project.
 
 ```bash
 # First time only — generate the Android upload keystore on EAS
