@@ -9,7 +9,8 @@ Google Play denied production access on 2026-07-16: tester engagement during the
 3. Bump `version` in `app.json` (versionCode auto-increments on EAS).
 4. Add a `CHANGELOG.md` entry + a `release-notes/vX.Y.Z.txt` (≤500 chars) thanking testers.
 5. Release = push a version tag: `git tag vX.Y.Z && git push origin main vX.Y.Z` — GitHub Actions (`.github/workflows/eas-release.yml`) triggers the EAS build, which auto-submits to the closed **alpha** track and publishes to testers. Manual fallback: `eas build --platform android --profile production --auto-submit`.
-6. Post the day's message from [GROUP-POSTS.md](GROUP-POSTS.md) in the tester group (paste the release notes into Play Console's "What's new" too).
+6. Once the submission lands on the track (~20 min after the tag push), set the Play "What's new" text: `node scripts/set-play-release-notes.js alpha` (reads `release-notes/v<version>.txt`; EAS submit can't set Android release notes).
+7. Post the day's message from [GROUP-POSTS.md](GROUP-POSTS.md) in the tester group.
 
 ## Engagement requirements (do not lose the clock)
 

@@ -47,3 +47,6 @@ play-store-credentials.json
 
 # Upload cert PEM (public, but no need to commit)
 upload_cert.pem
+
+# Google Cloud key downloads (any project-id-named key file)
+playgames-*.json
