@@ -30,9 +30,9 @@ Any bug, however small — reply here and it'll be fixed in the next daily build
 
 Hi all!
 
-Today the coin gets **haptic feedback** — a subtle vibration as it spins and lands. There's a toggle in Settings if you prefer it silent-still.
+Today the coin gets **haptic feedback** — a light tick as it launches and a firmer bump when it lands. There's a toggle in Settings if you prefer it still.
 
-Plus fixes from your reports — thank you to everyone who replied yesterday!
+Thanks to everyone flipping daily — your replies decide what gets fixed and built next, so keep them coming!
 
 👉 Update, flip with haptics ON and OFF, and tell me which you prefer.
 
