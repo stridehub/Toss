@@ -42,7 +42,7 @@ function Pill<V extends string>({ value, label, active, iconName, onPick }: Read
 
 const SettingsScreen: React.FC = () => {
   const { colors, mode, setMode } = useTheme();
-  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis } = useSettings();
+  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis, haptics, setHaptics } = useSettings();
   const navigation = useNavigation();
 
   return (
@@ -86,6 +86,23 @@ const SettingsScreen: React.FC = () => {
               iconName="swap-horizontal"
               active={flipAxis === 'horizontal'}
               onPick={setFlipAxis}
+            />
+          </View>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.cardRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cardLabel, { color: colors.text }]}>Haptic feedback</Text>
+              <Text style={[styles.cardSub, { color: colors.textMuted }]}>
+                Vibrate as the coin spins and lands.
+              </Text>
+            </View>
+            <Switch
+              value={haptics}
+              onValueChange={setHaptics}
+              thumbColor={haptics ? colors.primary : '#FFFFFF'}
+              trackColor={{ false: colors.border, true: colors.primarySoft }}
             />
           </View>
         </View>

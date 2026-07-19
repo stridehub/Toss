@@ -1,0 +1,9 @@
+Thanks for flipping every day, testers — this build is for you! 🙏
+
+NEW
+• Haptic feedback: feel a light tick as the coin launches and a solid bump when it lands
+• Haptics toggle in Settings if you prefer it still (on by default)
+
+Flip with haptics ON and tell us in the tester group: too strong, too weak, or just right on your phone?
+
+A fresh build lands every day during testing — keep flipping and keep the feedback coming!

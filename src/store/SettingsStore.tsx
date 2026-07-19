@@ -6,18 +6,20 @@ export type FlipAxis = 'horizontal' | 'vertical';
 interface SettingsState {
   voiceAssist: boolean;
   flipAxis: FlipAxis;
+  haptics: boolean;
 }
 
 interface SettingsValue extends SettingsState {
   setVoiceAssist: (on: boolean) => void;
   setFlipAxis: (axis: FlipAxis) => void;
+  setHaptics: (on: boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsValue | undefined>(undefined);
 
 const STORAGE_KEY = '@toss/settings';
 
-const defaultState: SettingsState = { voiceAssist: false, flipAxis: 'vertical' };
+const defaultState: SettingsState = { voiceAssist: false, flipAxis: 'vertical', haptics: true };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<SettingsState>(defaultState);
@@ -51,9 +53,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((s) => ({ ...s, flipAxis: axis }));
   }, []);
 
+  const setHaptics = useCallback((on: boolean) => {
+    setState((s) => ({ ...s, haptics: on }));
+  }, []);
+
   const value = useMemo(
-    () => ({ ...state, setVoiceAssist, setFlipAxis }),
-    [state, setVoiceAssist, setFlipAxis],
+    () => ({ ...state, setVoiceAssist, setFlipAxis, setHaptics }),
+    [state, setVoiceAssist, setFlipAxis, setHaptics],
   );
 
   if (!hydrated) return null;

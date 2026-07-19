@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
@@ -24,7 +25,7 @@ type Face = CoinFace | null;
 
 const HomeScreen: React.FC = () => {
   const { colors, isDark, setMode } = useTheme();
-  const { flipAxis, voiceAssist } = useSettings();
+  const { flipAxis, voiceAssist, haptics } = useSettings();
   const { heads, tails, total, streak, streakFace, recent, recordFlip, resetStats } = useStats();
   const navigation = useNavigation<Nav>();
   const { width, height } = useWindowDimensions();
@@ -60,6 +61,7 @@ const HomeScreen: React.FC = () => {
     const next: CoinFace = Math.random() < 0.5 ? 'heads' : 'tails';
     setFlipping(true);
     spin.setValue(0);
+    if (haptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     // Swap the face at the spin's midpoint so it changes during an edge-on frame,
     // not as a snap right at the end.
     swapTimer.current = setTimeout(() => setFace(next), 400);
@@ -71,6 +73,7 @@ const HomeScreen: React.FC = () => {
     }).start(({ finished }) => {
       setFlipping(false);
       if (!finished) return;
+      if (haptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       recordFlip(next);
       const spoken = next === 'heads' ? 'Heads' : 'Tails';
       if (voiceAssist) {
