@@ -2,6 +2,18 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
+## [1.3.0] — 2026-07-20
+
+### Added
+
+- **Coin-flip sound effects**: a soft whoosh as the coin launches and a metallic ting when it lands (generated in-repo by `scripts/generate-coin-sfx.js`).
+- "Sound effects" toggle in Settings (on by default), persisted like the other settings.
+
+### Changed
+
+- Sounds respect the phone's silent switch and mix with (never pause) music playing in other apps.
+- The Android app requests no microphone permission — `expo-audio` is configured playback-only.
+
 ## [1.2.0] — 2026-07-19
 
 ### Added

@@ -42,7 +42,8 @@ function Pill<V extends string>({ value, label, active, iconName, onPick }: Read
 
 const SettingsScreen: React.FC = () => {
   const { colors, mode, setMode } = useTheme();
-  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis, haptics, setHaptics } = useSettings();
+  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis, haptics, setHaptics, sound, setSound } =
+    useSettings();
   const navigation = useNavigation();
 
   return (
@@ -102,6 +103,23 @@ const SettingsScreen: React.FC = () => {
               value={haptics}
               onValueChange={setHaptics}
               thumbColor={haptics ? colors.primary : '#FFFFFF'}
+              trackColor={{ false: colors.border, true: colors.primarySoft }}
+            />
+          </View>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.cardRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cardLabel, { color: colors.text }]}>Sound effects</Text>
+              <Text style={[styles.cardSub, { color: colors.textMuted }]}>
+                Play a coin sound as it spins and lands.
+              </Text>
+            </View>
+            <Switch
+              value={sound}
+              onValueChange={setSound}
+              thumbColor={sound ? colors.primary : '#FFFFFF'}
               trackColor={{ false: colors.border, true: colors.primarySoft }}
             />
           </View>

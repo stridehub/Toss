@@ -1,0 +1,10 @@
+Day 3 of daily builds — thank you for keeping the streak alive, testers! 🙏
+
+NEW
+• The coin has a voice: a soft whoosh as it launches and a metallic ting when it lands
+• Sound effects toggle in Settings (on by default)
+• Sounds mix politely with your music and follow the silent switch
+
+Flip with sound on and tell us in the tester group: does the ting land exactly when the coin does on your phone?
+
+A fresh build lands every day — keep flipping!

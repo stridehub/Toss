@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,9 +24,12 @@ import { useStats, CoinFace } from '../store/StatsStore';
 type Nav = DrawerNavigationProp<Record<string, object | undefined>>;
 type Face = CoinFace | null;
 
+const flipSfx = require('../../assets/sfx-flip.wav');
+const landSfx = require('../../assets/sfx-land.wav');
+
 const HomeScreen: React.FC = () => {
   const { colors, isDark, setMode } = useTheme();
-  const { flipAxis, voiceAssist, haptics } = useSettings();
+  const { flipAxis, voiceAssist, haptics, sound } = useSettings();
   const { heads, tails, total, streak, streakFace, recent, recordFlip, resetStats } = useStats();
   const navigation = useNavigation<Nav>();
   const { width, height } = useWindowDimensions();
@@ -33,6 +37,16 @@ const HomeScreen: React.FC = () => {
   const [flipping, setFlipping] = useState(false);
   const spin = useRef(new Animated.Value(0)).current;
   const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flipPlayer = useAudioPlayer(flipSfx);
+  const landPlayer = useAudioPlayer(landSfx);
+
+  useEffect(() => {
+    // Coin effects behave like keyboard clicks: they respect the phone's
+    // silent switch and never take audio focus from the user's music.
+    setAudioModeAsync({ playsInSilentMode: false, interruptionMode: 'mixWithOthers' }).catch(
+      () => {},
+    );
+  }, []);
 
   const minDim = Math.min(width, height);
   const coinSize = Math.min(Math.max(minDim * 0.55, 200), 420);
@@ -62,6 +76,10 @@ const HomeScreen: React.FC = () => {
     setFlipping(true);
     spin.setValue(0);
     if (haptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    if (sound) {
+      flipPlayer.seekTo(0);
+      flipPlayer.play();
+    }
     // Swap the face at the spin's midpoint so it changes during an edge-on frame,
     // not as a snap right at the end.
     swapTimer.current = setTimeout(() => setFace(next), 400);
@@ -74,6 +92,10 @@ const HomeScreen: React.FC = () => {
       setFlipping(false);
       if (!finished) return;
       if (haptics) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      if (sound) {
+        landPlayer.seekTo(0);
+        landPlayer.play();
+      }
       recordFlip(next);
       const spoken = next === 'heads' ? 'Heads' : 'Tails';
       if (voiceAssist) {
