@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme, ThemeMode } from '../theme/ThemeContext';
-import { useSettings, FlipAxis } from '../store/SettingsStore';
+import { useSettings, FlipAxis, ShakeSensitivity } from '../store/SettingsStore';
 
 interface PillProps<V extends string> {
   value: V;
@@ -42,8 +42,18 @@ function Pill<V extends string>({ value, label, active, iconName, onPick }: Read
 
 const SettingsScreen: React.FC = () => {
   const { colors, mode, setMode } = useTheme();
-  const { voiceAssist, setVoiceAssist, flipAxis, setFlipAxis, haptics, setHaptics, sound, setSound } =
-    useSettings();
+  const {
+    voiceAssist,
+    setVoiceAssist,
+    flipAxis,
+    setFlipAxis,
+    haptics,
+    setHaptics,
+    sound,
+    setSound,
+    shake,
+    setShake,
+  } = useSettings();
   const navigation = useNavigation();
 
   return (
@@ -121,6 +131,29 @@ const SettingsScreen: React.FC = () => {
               onValueChange={setSound}
               thumbColor={sound ? colors.primary : '#FFFFFF'}
               trackColor={{ false: colors.border, true: colors.primarySoft }}
+            />
+          </View>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.cardLabel, { color: colors.text }]}>Shake to flip</Text>
+          <Text style={[styles.cardSub, { color: colors.textMuted }]}>
+            Flip hands-free by shaking your phone. Higher sensitivity flips on a gentler shake.
+          </Text>
+          <View style={styles.pillRow}>
+            <Pill<ShakeSensitivity> value="off" label="Off" active={shake === 'off'} onPick={setShake} />
+            <Pill<ShakeSensitivity> value="low" label="Low" active={shake === 'low'} onPick={setShake} />
+            <Pill<ShakeSensitivity>
+              value="medium"
+              label="Medium"
+              active={shake === 'medium'}
+              onPick={setShake}
+            />
+            <Pill<ShakeSensitivity>
+              value="high"
+              label="High"
+              active={shake === 'high'}
+              onPick={setShake}
             />
           </View>
         </View>

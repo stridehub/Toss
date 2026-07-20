@@ -2,12 +2,14 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type FlipAxis = 'horizontal' | 'vertical';
+export type ShakeSensitivity = 'off' | 'low' | 'medium' | 'high';
 
 interface SettingsState {
   voiceAssist: boolean;
   flipAxis: FlipAxis;
   haptics: boolean;
   sound: boolean;
+  shake: ShakeSensitivity;
 }
 
 interface SettingsValue extends SettingsState {
@@ -15,6 +17,7 @@ interface SettingsValue extends SettingsState {
   setFlipAxis: (axis: FlipAxis) => void;
   setHaptics: (on: boolean) => void;
   setSound: (on: boolean) => void;
+  setShake: (level: ShakeSensitivity) => void;
 }
 
 const SettingsContext = createContext<SettingsValue | undefined>(undefined);
@@ -26,6 +29,7 @@ const defaultState: SettingsState = {
   flipAxis: 'vertical',
   haptics: true,
   sound: true,
+  shake: 'medium',
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -68,9 +72,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((s) => ({ ...s, sound: on }));
   }, []);
 
+  const setShake = useCallback((level: ShakeSensitivity) => {
+    setState((s) => ({ ...s, shake: level }));
+  }, []);
+
   const value = useMemo(
-    () => ({ ...state, setVoiceAssist, setFlipAxis, setHaptics, setSound }),
-    [state, setVoiceAssist, setFlipAxis, setHaptics, setSound],
+    () => ({ ...state, setVoiceAssist, setFlipAxis, setHaptics, setSound, setShake }),
+    [state, setVoiceAssist, setFlipAxis, setHaptics, setSound, setShake],
   );
 
   if (!hydrated) return null;

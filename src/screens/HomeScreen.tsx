@@ -13,12 +13,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
+import { Accelerometer } from 'expo-sensors';
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useTheme, ThemeMode } from '../theme/ThemeContext';
-import { useSettings } from '../store/SettingsStore';
+import { useSettings, ShakeSensitivity } from '../store/SettingsStore';
 import { useStats, CoinFace } from '../store/StatsStore';
 
 type Nav = DrawerNavigationProp<Record<string, object | undefined>>;
@@ -27,9 +28,19 @@ type Face = CoinFace | null;
 const flipSfx = require('../../assets/sfx-flip.wav');
 const landSfx = require('../../assets/sfx-land.wav');
 
+// Total acceleration (in g) a sample must exceed to count as a shake.
+// Android 12+ delivers at most one sample per 200 ms, so detection is a
+// single-sample threshold with a cooldown rather than a multi-peak pattern.
+const SHAKE_THRESHOLD: Record<Exclude<ShakeSensitivity, 'off'>, number> = {
+  low: 2.6,
+  medium: 2.1,
+  high: 1.7,
+};
+const SHAKE_COOLDOWN_MS = 1200;
+
 const HomeScreen: React.FC = () => {
   const { colors, isDark, setMode } = useTheme();
-  const { flipAxis, voiceAssist, haptics, sound } = useSettings();
+  const { flipAxis, voiceAssist, haptics, sound, shake } = useSettings();
   const { heads, tails, total, streak, streakFace, recent, recordFlip, resetStats } = useStats();
   const navigation = useNavigation<Nav>();
   const { width, height } = useWindowDimensions();
@@ -39,6 +50,9 @@ const HomeScreen: React.FC = () => {
   const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flipPlayer = useAudioPlayer(flipSfx);
   const landPlayer = useAudioPlayer(landSfx);
+  const isFocused = useIsFocused();
+  const flipRef = useRef<() => void>(() => {});
+  const lastShakeAt = useRef(0);
 
   useEffect(() => {
     // Coin effects behave like keyboard clicks: they respect the phone's
@@ -107,6 +121,22 @@ const HomeScreen: React.FC = () => {
       }
     });
   };
+
+  flipRef.current = flip;
+
+  useEffect(() => {
+    if (!isFocused || shake === 'off') return;
+    Accelerometer.setUpdateInterval(100);
+    const threshold = SHAKE_THRESHOLD[shake];
+    const sub = Accelerometer.addListener(({ x, y, z }) => {
+      if (Math.hypot(x, y, z) < threshold) return;
+      const now = Date.now();
+      if (now - lastShakeAt.current < SHAKE_COOLDOWN_MS) return;
+      lastShakeAt.current = now;
+      flipRef.current();
+    });
+    return () => sub.remove();
+  }, [isFocused, shake]);
 
   const confirmReset = () => {
     Alert.alert('Reset stats?', 'This clears your heads/tails counts and recent flips.', [

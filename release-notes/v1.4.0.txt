@@ -1,0 +1,8 @@
+Two builds in one day — that's how much your testing keeps us moving. Thank you! 🙏
+
+NEW
+• Shake to flip: give your phone a shake and the coin flips, no tap needed
+• Sensitivity setting in Settings (Off / Low / Medium / High) — default Medium
+• The sensor only listens while the coin screen is open, so no battery drain
+
+Try shaking at different strengths and tell us in the tester group if it ever triggers by accident — that's the #1 thing to tune!

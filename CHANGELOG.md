@@ -2,6 +2,13 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
+## [1.4.0] — 2026-07-20
+
+### Added
+
+- **Shake to flip**: shake your phone and the coin flips — no tap needed. Works only while the Home screen is visible.
+- "Shake to flip" sensitivity setting (Off / Low / Medium / High) in Settings, default Medium. Higher sensitivity flips on a gentler shake; Off disables the sensor entirely.
+
 ## [1.3.0] — 2026-07-20
 
 ### Added
