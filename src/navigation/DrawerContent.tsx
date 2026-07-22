@@ -40,6 +40,7 @@ function DrawerContent({ navigation }: Readonly<DrawerContentComponentProps>): R
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        <Row iconName="time-outline" label="History" onPress={() => go('History')} />
         <Row iconName="settings-outline" label="Settings" onPress={() => go('Settings')} />
         <Row iconName="document-text-outline" label="Terms & Conditions" onPress={() => go('Terms')} />
         <Row iconName="shield-checkmark-outline" label="Privacy Policy" onPress={() => go('Privacy')} />

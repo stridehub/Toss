@@ -1,0 +1,10 @@
+Sorry about the crash in the last update — this build fixes it. Thank you for reporting it! 🙏
+
+FIXED
+• App crashing at launch after updating (a build dependency conflict)
+
+NEW
+• Shake to flip: shake your phone and the coin flips — sensitivity setting in Settings
+• History screen in the menu: every flip with its time, plus clear-all
+
+Update, make sure it opens fine, then flip, shake, and check your History — and tell us in the tester group how it goes!

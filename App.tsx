@@ -18,6 +18,7 @@ import { SettingsProvider } from './src/store/SettingsStore';
 import { StatsProvider } from './src/store/StatsStore';
 import DrawerContent from './src/navigation/DrawerContent';
 import HomeScreen from './src/screens/HomeScreen';
+import HistoryScreen from './src/screens/HistoryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import TermsScreen from './src/screens/TermsScreen';
 import PrivacyScreen from './src/screens/PrivacyScreen';
@@ -61,6 +62,7 @@ const Navigation: React.FC = () => {
         drawerContent={DrawerContent}
       >
         <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="History" component={HistoryScreen} />
         <Drawer.Screen name="Settings" component={SettingsScreen} />
         <Drawer.Screen name="Terms" component={TermsScreen} />
         <Drawer.Screen name="Privacy" component={PrivacyScreen} />

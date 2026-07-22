@@ -3,28 +3,49 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type CoinFace = 'heads' | 'tails';
 
+export interface FlipRecord {
+  face: CoinFace;
+  at: number; // epoch ms
+}
+
 interface StatsState {
   heads: number;
   tails: number;
   streak: number;
   streakFace: CoinFace | null;
   recent: CoinFace[]; // newest first, capped at RECENT_LIMIT
+  history: FlipRecord[]; // newest first, capped at HISTORY_LIMIT
 }
 
 interface StatsValue extends StatsState {
   total: number;
   recordFlip: (face: CoinFace) => void;
   resetStats: () => void;
+  clearHistory: () => void;
 }
 
 const StatsContext = createContext<StatsValue | undefined>(undefined);
 
 const STORAGE_KEY = '@toss/stats';
 const RECENT_LIMIT = 10;
+export const HISTORY_LIMIT = 500;
 
-const defaultState: StatsState = { heads: 0, tails: 0, streak: 0, streakFace: null, recent: [] };
+const defaultState: StatsState = {
+  heads: 0,
+  tails: 0,
+  streak: 0,
+  streakFace: null,
+  recent: [],
+  history: [],
+};
 
 const isFace = (v: unknown): v is CoinFace => v === 'heads' || v === 'tails';
+
+const isFlipRecord = (v: unknown): v is FlipRecord => {
+  if (typeof v !== 'object' || v === null) return false;
+  const r = v as { face?: unknown; at?: unknown };
+  return isFace(r.face) && typeof r.at === 'number' && Number.isFinite(r.at);
+};
 
 // Stored JSON may come from an older app version — coerce every field defensively.
 const sanitize = (raw: unknown): StatsState => {
@@ -38,6 +59,7 @@ const sanitize = (raw: unknown): StatsState => {
     streak: count(r.streak),
     streakFace: isFace(r.streakFace) ? r.streakFace : null,
     recent: Array.isArray(r.recent) ? r.recent.filter(isFace).slice(0, RECENT_LIMIT) : [],
+    history: Array.isArray(r.history) ? r.history.filter(isFlipRecord).slice(0, HISTORY_LIMIT) : [],
   };
 };
 
@@ -72,14 +94,17 @@ export const StatsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       streak: s.streakFace === face ? s.streak + 1 : 1,
       streakFace: face,
       recent: [face, ...s.recent].slice(0, RECENT_LIMIT),
+      history: [{ face, at: Date.now() }, ...s.history].slice(0, HISTORY_LIMIT),
     }));
   }, []);
 
   const resetStats = useCallback(() => setState(defaultState), []);
 
+  const clearHistory = useCallback(() => setState((s) => ({ ...s, history: [] })), []);
+
   const value = useMemo(
-    () => ({ ...state, total: state.heads + state.tails, recordFlip, resetStats }),
-    [state, recordFlip, resetStats],
+    () => ({ ...state, total: state.heads + state.tails, recordFlip, resetStats, clearHistory }),
+    [state, recordFlip, resetStats, clearHistory],
   );
 
   if (!hydrated) return null;

@@ -70,17 +70,22 @@ New today: **shake-to-flip**. Give your phone a shake and the coin flips — no 
 
 ---
 
-## Day 5 — v1.5.0 (History screen)
+## Day 5 — v1.5.0 (Crash fix + shake-to-flip + History screen)
 
-**Subject:** Toss v1.5.0 — your full flip history 📜
+**Subject:** Toss v1.5.0 — crash fixed + two new features 📜🤝
 
 Hi everyone!
 
-The sidebar has a new **History** screen: every flip with its time, and a clear-all button. The Day-1 stats row shows your last 10 — this shows everything.
+First: **the crash some of you hit after the last update is fixed** — that was on us (a dependency conflict in the build), and this update repairs it. If Toss wouldn't open on your phone, this build is the cure. Thank you to everyone who reported it! 🙏
 
-👉 Update, flip a few times, and open History from the menu.
+And it's a double-feature day:
 
-**Question of the day:** what else would you want on this screen — daily totals, longest streak, export?
+1. **Shake to flip** — shake your phone and the coin flips, no tap needed. Sensitivity is adjustable in Settings (Off / Low / Medium / High).
+2. **History screen** — the sidebar now has History: every flip with its time, and a clear-all button. The stats row shows your last 10 — this shows everything.
+
+👉 Update, confirm it opens fine, then flip, shake, and open History from the menu.
+
+**Question of the day:** is the crash gone on your phone (model please!), and does shake-to-flip ever trigger by accident?
 
 ---
 

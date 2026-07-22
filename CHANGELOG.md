@@ -2,6 +2,20 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
+## [1.5.0] — 2026-07-22
+
+### Fixed
+
+- **App crashing at launch after updating.** The v1.3.0 build shipped two conflicting copies of Expo native modules: `expo-audio` declares `expo-asset` as a loose peer dependency, and npm auto-installed the latest (SDK 55-line) `expo-asset`/`expo-constants` alongside SDK 54's copies. Both are now pinned as direct dependencies at the SDK 54 versions; `expo-doctor` passes 18/18.
+
+### Added
+
+- **History screen** in the sidebar: every flip with its time (Today/Yesterday-style timestamps), newest first, plus a clear-all button with confirmation. Keeps the most recent 500 flips; clearing history leaves counters/stats untouched.
+
+### Notes
+
+- v1.4.0 (shake-to-flip) was built but never reached testers due to a Play Console policy gate, so this is the first update since 1.3.0 — it delivers shake-to-flip as well.
+
 ## [1.4.0] — 2026-07-20
 
 ### Added
