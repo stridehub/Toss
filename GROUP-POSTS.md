@@ -70,9 +70,9 @@ New today: **shake-to-flip**. Give your phone a shake and the coin flips — no 
 
 ---
 
-## Day 5 — v1.5.0 (Crash fix + shake-to-flip + History screen)
+## Day 5 — v1.5.2 (Crash fix + shake-to-flip + History screen)
 
-**Subject:** Toss v1.5.0 — crash fixed + two new features 📜🤝
+**Subject:** Toss v1.5.2 — crash fixed + two new features 📜🤝
 
 Hi everyone!
 

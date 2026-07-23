@@ -2,7 +2,7 @@
   "expo": {
     "name": "Toss",
     "slug": "Toss",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "orientation": "portrait",
     "icon": "./assets/Heads.png",
     "userInterfaceStyle": "automatic",
@@ -13,6 +13,7 @@
       "package": "app.stridehub.toss",
       "versionCode": 1,
       "blockedPermissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],

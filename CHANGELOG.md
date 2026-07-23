@@ -2,6 +2,12 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
+## [1.5.2] — 2026-07-24
+
+### Changed
+
+- Stripped `ACTIVITY_RECOGNITION` from the Android manifest via `android.blockedPermissions`. `expo-sensors` bundles it for its Pedometer, which Toss never uses (shake-to-flip only reads the accelerometer, which needs no permission). Google Play treats `ACTIVITY_RECOGNITION` as a health-data permission and was blocking every release since v1.4.0 with a "health features" policy error. Same app content as 1.5.0/1.5.1 otherwise.
+
 ## [1.5.1] — 2026-07-23
 
 ### Changed
