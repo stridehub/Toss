@@ -2,6 +2,12 @@
 
 All notable user-facing changes to Toss. One build per day during the closed-testing period — each build ships at least one feature and one fix.
 
+## [1.5.1] — 2026-07-23
+
+### Changed
+
+- Stripped `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PLAYBACK` from the Android manifest via `android.blockedPermissions`. `expo-audio` declares them for its background-playback service, which Toss never uses — they were tripping Google Play's "Foreground service permissions" declaration requirement. Same app content as 1.5.0 otherwise.
+
 ## [1.5.0] — 2026-07-22
 
 ### Fixed
